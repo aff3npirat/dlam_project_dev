@@ -1,0 +1,6 @@
+Netzarchitektur aussuchen
+Workflow festlegen
+    Bitbreite reduzieren oder nur Werte
+    Wie wählen wir Gewichte aus
+    Prio accuracy/speed/memory size
+    
