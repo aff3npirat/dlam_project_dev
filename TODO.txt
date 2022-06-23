@@ -1,6 +1,26 @@
 Netzarchitektur aussuchen
+
+dataset
+    cifar10
+
+conda env
+    timm
+
 Workflow festlegen
     Bitbreite reduzieren oder nur Werte
+        nur Werte auf 1/-1 (anfangs)
+        torch tensor mit full precision UND 1Bit
+            wie können wir XNOR operationen benutzen? Wird das automatisch gemacht?
+                Gibt es torch schnittstelle für sowas? 
+
+    welche sign funktion
+        Im Paper nachschauen!
+
     Wie wählen wir Gewichte aus
-    Prio accuracy/speed/memory size
+        Random selection
+        Magnitude selection
+        Gradient based selection
+        Suche -> pro Schritt N Gewichte binarisieren
+        
+    Prio accuracy/speed/memory size?
     
