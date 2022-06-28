@@ -10,6 +10,7 @@ from dlam_project.datasets.cifar import train_set as cifar10_train
 from dlam_project.datasets.cifar import test_set as cifar10_test
 
 
+
 def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """
     Trains a resnet50 on cifar10 and stores model in
@@ -39,7 +40,7 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
             if (batch+1) % 100 == 0:
                 print(f"Loss: {loss.item()} [{batch+1}/{len(trainloader)}]")
 
-    torch.save(model.to(torch.device("cpu")), "./dlam_project/saves/base/model.pt")
+    torch.save(model.cpu(), "./dlam_project/saves/base/model.pt")
 
 
 def eval(
@@ -57,6 +58,8 @@ def eval(
     np.random.seed(1337)
     torch.use_deterministic_algorithms(mode=True)
 
+    model = model.to(device)
+
     testloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     loss_fn = nn.CrossEntropyLoss(reduction="none")
 
@@ -65,18 +68,22 @@ def eval(
 
     model.eval()
     with torch.no_grad():
-        for batch, (x, y) in enumerate(testloader):
+        for batch, (X, Y) in enumerate(testloader):
+            x = X.to(device)
+            y = Y.to(device)
+
+            pred = model(x)
+            
             start = batch * batch_size
             end = (batch+1) * batch_size
             
-            pred = model(x)
-            losses[start:end] = loss_fn(pred, y)
-            correct[start:end] = pred.argmax(dim=1) == y
+            losses[start:end] = loss_fn(pred, y).cpu()
+            correct[start:end] = (pred.argmax(dim=1) == y).cpu()
 
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
 
-    torch.save(model, os.path.join(path, "model.pt"))
+    torch.save(model.cpu(), os.path.join(path, "model.pt"))
     torch.save(losses, os.path.join(path, "losses.pt"))
     torch.save(correct, os.path.join(path, "correct.pt"))
 
