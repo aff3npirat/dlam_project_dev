@@ -4,11 +4,11 @@ import torch.nn as nn
 import timm
 import numpy as np
 import random
+import copy
 from torch.utils.data import DataLoader
 
 from dlam_project.datasets.cifar import train_set as cifar10_train
 from dlam_project.datasets.cifar import test_set as cifar10_test
-from dlam_project.helpers import get_ith_trainable
 
 
 
@@ -22,18 +22,11 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     model = timm.create_model("resnet50", pretrained=True, drop_rate=0.5)
     model.reset_classifier(10)
 
-    # freeze layers
-    for p in model.parameters():
-        p.requires_grad = False
-    classifier = list(model.modules())[-1]
-    classifier.weight.requires_grad = True
-    classifier.bias.requires_grad = True
-
     model.train()
 
     trainloader = DataLoader(cifar10_train, batch_size=64, shuffle=False)
     loss_fn = nn.CrossEntropyLoss()
-    optim = torch.optim.Adam(classifier.parameters(), lr=0.01)
+    optim = torch.optim.Adam(model.parameters(), lr=0.01)
 
     model = model.to(device)
     max_acc = 0
@@ -53,9 +46,10 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
                 print(f"Loss: {loss.item()} [{batch+1}/{len(trainloader)}]")
         
         print("\nEvaluating")
-        if (acc:=eval(model, "base")) > max_acc:
+        acc = eval(model, "base")
+        if acc > max_acc:
             max_acc = acc
-            torch.save(model.cpu(), "./dlam_project/saves/best/model.pt")
+            torch.save(copy.deepcopy(model).cpu(), "./dlam_project/saves/base/best/model.pt")
         model.train()
 
     torch.save(model.cpu(), "./dlam_project/saves/base/model.pt")
@@ -102,7 +96,7 @@ def eval(
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
 
-    torch.save(model.cpu(), os.path.join(path, "model.pt"))
+    torch.save(copy.deepcopy(model).cpu(), os.path.join(path, "model.pt"))
     torch.save(losses, os.path.join(path, "losses.pt"))
     torch.save(correct, os.path.join(path, "correct.pt"))
 
@@ -112,6 +106,7 @@ def eval(
 
 if __name__ == "__main__":
     os.makedirs("./dlam_project/saves/base", exist_ok=False)
+    os.makedirs("./dlam_project/saves/base/best", exist_ok=False)
 
     if torch.cuda.is_available():
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
