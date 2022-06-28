@@ -27,6 +27,7 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     optim = torch.optim.Adam(model.parameters(), lr=0.01)
 
     model = model.to(device)
+    max_acc = 0
     for e in range(10):
         print(f"\nEpoch {e+1}")
         for batch, (X, Y) in enumerate(trainloader):
@@ -43,7 +44,9 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
                 print(f"Loss: {loss.item()} [{batch+1}/{len(trainloader)}]")
         
         print("\nEvaluating")
-        eval(model, "base")
+        if (acc:=eval(model, "base")) > max_acc:
+            max_acc = acc
+            torch.save(model.cpu(), "./dlam_project/saves/best/model.pt")
         model.train()
 
     torch.save(model.cpu(), "./dlam_project/saves/base/model.pt")
@@ -92,6 +95,8 @@ def eval(
     torch.save(model.cpu(), os.path.join(path, "model.pt"))
     torch.save(losses, os.path.join(path, "losses.pt"))
     torch.save(correct, os.path.join(path, "correct.pt"))
+
+    return acc
 
 
 
