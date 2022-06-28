@@ -1,3 +1,4 @@
+from genericpath import exists
 import torch
 import torch.nn as nn
 import timm
@@ -75,5 +76,8 @@ def eval(
 
 
 if __name__ == "__main__":
+    import os
+    os.mkdir("./dlam_project/saves/base")
+
     train()
     eval("base")
