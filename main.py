@@ -10,7 +10,7 @@ from dlam_project.datasets.cifar import train_set as cifar10_train
 from dlam_project.datasets.cifar import test_set as cifar10_test
 
 
-def train(device=torch.device("cpu")):
+def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """
     Trains a resnet50 on cifar10 and stores model in
     ./dlam_project/saves/base/model.pt
@@ -25,6 +25,7 @@ def train(device=torch.device("cpu")):
 
     model = model.to(device)
     for e in range(10):
+        print(f"Epoch {e+1}\n")
         for batch, (X, Y) in enumerate(trainloader):
             x = X.to(device)
             y = Y.to(device)
@@ -42,10 +43,12 @@ def train(device=torch.device("cpu")):
 
 
 def eval(
+    model,
     name,
     subdir="",
     dataset=cifar10_test,
     batch_size=64,
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ):
     path = f"./dlam_project/saves/{name}/{subdir}"
 
@@ -53,8 +56,6 @@ def eval(
     random.seed(1337)
     np.random.seed(1337)
     torch.use_deterministic_algorithms(mode=True)
-
-    model = torch.load(os.path.join(path, "model.pt"))
 
     testloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     loss_fn = nn.CrossEntropyLoss(reduction="none")
@@ -75,6 +76,7 @@ def eval(
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
 
+    torch.save(model, os.path.join(path, "model.pt"))
     torch.save(losses, os.path.join(path, "losses.pt"))
     torch.save(correct, os.path.join(path, "correct.pt"))
 
@@ -83,5 +85,5 @@ def eval(
 if __name__ == "__main__":
     os.makedirs("./dlam_project/saves/base", exist_ok=False)
 
-    train(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    train()
     eval("base")
