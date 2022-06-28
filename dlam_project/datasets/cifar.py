@@ -7,5 +7,5 @@ transform = transforms.Compose([transforms.ToTensor(),
 
 # 32 x 32 x 3 pixels
 cifar10 = datasets.CIFAR10
-train_set = cifar10("./store/datasets/data/cifar10", download=True, train=True, transform=transform)
-test_set = cifar10("./store/datasets/data/cifar10", download=True, train=False, transform=transform)
+train_set = cifar10("./dlam_project/datasets/data/cifar10", download=True, train=True, transform=transform)
+test_set = cifar10("./dlam_project/datasets/data/cifar10", download=True, train=False, transform=transform)
