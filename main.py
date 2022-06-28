@@ -26,7 +26,7 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
 
     model = model.to(device)
     for e in range(10):
-        print(f"Epoch {e+1}\n")
+        print(f"\nEpoch {e+1}")
         for batch, (X, Y) in enumerate(trainloader):
             x = X.to(device)
             y = Y.to(device)
@@ -39,6 +39,10 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
 
             if (batch+1) % 100 == 0:
                 print(f"Loss: {loss.item()} [{batch+1}/{len(trainloader)}]")
+        
+        print("\nEvaluating")
+        eval(model, "base")
+        model.train()
 
     torch.save(model.cpu(), "./dlam_project/saves/base/model.pt")
 
