@@ -16,6 +16,8 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     Trains a resnet50 on cifar10 and stores model in
     ./dlam_project/saves/base/model.pt
     """
+    print(f"Current device: {device}")
+
     model = timm.create_model("resnet50", pretrained=False, drop_rate=0.5)
     model.reset_classifier(10)
     model.train()
