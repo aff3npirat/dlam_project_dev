@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 
 from dlam_project.datasets.cifar import train_set as cifar10_train
 from dlam_project.datasets.cifar import test_set as cifar10_test
+from dlam_project.helpers import get_ith_trainable
 
 
 
@@ -18,17 +19,25 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """
     print(f"Current device: {device}")
 
-    model = timm.create_model("resnet50", pretrained=False, drop_rate=0.5)
+    model = timm.create_model("resnet50", pretrained=True, drop_rate=0.5)
     model.reset_classifier(10)
+
+    # freeze layers
+    for p in model.parameters():
+        p.requires_grad = False
+    classifier = list(model.modules())[-1]
+    classifier.weight.requires_grad = True
+    classifier.bias.requires_grad = True
+
     model.train()
 
     trainloader = DataLoader(cifar10_train, batch_size=64, shuffle=False)
     loss_fn = nn.CrossEntropyLoss()
-    optim = torch.optim.Adam(model.parameters(), lr=0.01)
+    optim = torch.optim.Adam(classifier.parameters(), lr=0.01)
 
     model = model.to(device)
     max_acc = 0
-    for e in range(10):
+    for e in range(50):
         print(f"\nEpoch {e+1}")
         for batch, (X, Y) in enumerate(trainloader):
             x = X.to(device)
@@ -66,6 +75,7 @@ def eval(
     random.seed(1337)
     np.random.seed(1337)
     torch.use_deterministic_algorithms(mode=True)
+    torch.backends.cudnn.benchmark = False
 
     model = model.to(device)
 
@@ -102,6 +112,9 @@ def eval(
 
 if __name__ == "__main__":
     os.makedirs("./dlam_project/saves/base", exist_ok=False)
+
+    if torch.cuda.is_available():
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
 
     train()
     eval("base")
