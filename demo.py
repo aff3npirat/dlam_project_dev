@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 
-model = timm.create_model("resnet50", pretrained=True)
+model = timm.create_model("resnet50", pretrained=False)
 
 for i, m in enumerate(model.modules()):
     if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
