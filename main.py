@@ -1,5 +1,5 @@
-from genericpath import exists
 import torch
+import os
 import torch.nn as nn
 import timm
 import numpy as np
@@ -10,7 +10,7 @@ from dlam_project.datasets.cifar import train_set as cifar10_train
 from dlam_project.datasets.cifar import test_set as cifar10_test
 
 
-def train():
+def train(device=torch.device("cpu")):
     """
     Trains a resnet50 on cifar10 and stores model in
     ./dlam_project/saves/base/model.pt
@@ -23,8 +23,11 @@ def train():
     loss_fn = nn.CrossEntropyLoss()
     optim = torch.optim.Adam(model.parameters(), lr=0.01)
 
+    model = model.to(device)
     for e in range(10):
-        for batch, (x, y) in enumerate(trainloader):
+        for batch, (X, Y) in enumerate(trainloader):
+            x = X.to(device)
+            y = Y.to(device)
             pred = model(x)
 
             loss = loss_fn(pred, y)
@@ -35,20 +38,23 @@ def train():
             if (batch+1) % 100 == 0:
                 print(f"Loss: {loss.item()} [{batch+1}/{len(trainloader)}]")
 
-    torch.save(model, "./dlam_project/saves/base/model.pt")
+    torch.save(model.to(torch.device("cpu")), "./dlam_project/saves/base/model.pt")
 
 
 def eval(
     name,
+    subdir="",
     dataset=cifar10_test,
     batch_size=64,
 ):
+    path = f"./dlam_project/saves/{name}/{subdir}"
+
     torch.manual_seed(1337)
     random.seed(1337)
     np.random.seed(1337)
     torch.use_deterministic_algorithms(mode=True)
 
-    model = torch.load(f"./dlam_project/saves/{name}/model.pt")
+    model = torch.load(os.path.join(path, "model.pt"))
 
     testloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     loss_fn = nn.CrossEntropyLoss(reduction="none")
@@ -69,15 +75,13 @@ def eval(
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
 
-    torch.save(model, f"./dlam_project/saves/{name}/model.pt")
-    torch.save(losses, f"./dlam_project/saves/{name}/losses.pt")
-    torch.save(correct, f"./dlam_project/saves/{name}/correct.pt")
+    torch.save(losses, os.path.join(path, "losses.pt"))
+    torch.save(correct, os.path.join(path, "correct.pt"))
 
 
 
 if __name__ == "__main__":
-    import os
-    os.mkdir("./dlam_project/saves/base")
+    os.makedirs("./dlam_project/saves/base", exist_ok=False)
 
-    train()
+    train(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     eval("base")
