@@ -29,6 +29,7 @@ with torch.no_grad():
             
             layer.bias[:] = bbias
 
+        print(f"Evaluating layer {i}")
         eval(
             model=model,
             name=f"layerwise/single/layer_{i}",
@@ -53,6 +54,7 @@ with torch.no_grad():
             
             layer.bias[:] = bbias
 
+        print(f"Evaluating layer 2-{i}")
         eval(
             model=model,
             name=f"layerwise/cumul/layer_{i}",
@@ -77,6 +79,7 @@ with torch.no_grad():
             
             layer.bias[:] = bbias
 
+        print(f"Evaluating layer {i}-{num_layers-1}")
         eval(
             model=model,
             name=f"layerwise/cumul_back/layer_{i}",
