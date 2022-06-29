@@ -112,4 +112,3 @@ if __name__ == "__main__":
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
 
     train()
-    eval("base")
