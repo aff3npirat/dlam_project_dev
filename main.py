@@ -58,13 +58,10 @@ def train(device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
 def eval(
     model,
     name,
-    subdir="",
     dataset=cifar10_test,
     batch_size=64,
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ):
-    path = f"./dlam_project/saves/{name}/{subdir}"
-
     torch.manual_seed(1337)
     random.seed(1337)
     np.random.seed(1337)
@@ -95,6 +92,9 @@ def eval(
 
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
+
+    path = f"./dlam_project/saves/{name}"
+    os.makedirs(path, exist_ok=True)
 
     torch.save(copy.deepcopy(model).cpu(), os.path.join(path, "model.pt"))
     torch.save(losses, os.path.join(path, "losses.pt"))
