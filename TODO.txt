@@ -7,6 +7,9 @@ conda env
     timm
 
 Workflow festlegen
+    Soll jeder für sich arbeiten (also eigene main schreiben) oder sollen wir verschiedene Methoden implementieren
+    und dann in einem run laufen lassen (also methoden in dlam_project)?
+    
     Bitbreite reduzieren oder nur Werte
         nur Werte auf 1/-1 (anfangs)
         torch tensor mit full precision UND 1Bit
