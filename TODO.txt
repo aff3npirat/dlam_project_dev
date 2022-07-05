@@ -23,4 +23,9 @@ Workflow festlegen
         Suche -> pro Schritt N Gewichte binarisieren
         
     Prio accuracy/speed/memory size?
+
+
+---04.07---
+ImageNet 2012 verkleinern (10.000)
+top 1 err, top 5 err
     

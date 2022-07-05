@@ -93,7 +93,7 @@ def eval(
         acc = correct.mean().item()
     print(f"Accuracy: {acc:.3f}")
 
-    path = f"./dlam_project/saves/{name}"
+    path = f"./saves/{name}"
     os.makedirs(path, exist_ok=True)
 
     torch.save(copy.deepcopy(model).cpu(), os.path.join(path, "model.pt"))
