@@ -1,4 +1,4 @@
-from layered import binarize_layer_experiment
+from layered import layered_experiment
 
 
 def test(model):

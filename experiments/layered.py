@@ -5,7 +5,7 @@ from dlam_project.methods.layerwise import binarize_layer
 from method_evaluation import eval_method_4_project
 
 
-def binarize_layer_experiment():
+def layered_experiment():
     num_layers, _ = count_params(load("./dlam_project/saves/base/model.pt"))
 
     with no_grad():

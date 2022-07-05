@@ -7,7 +7,7 @@ from torch.backends import cudnn
 
 from train import train
 from method_evaluation import eval_method_4_project
-from experiments import test, binarize_layer_experiment
+from experiments import test, layered_experiment
 
 
 if cuda.is_available():
@@ -27,6 +27,6 @@ makedirs("./dlam_project/saves/base/best", exist_ok=False)
 
 # train()
 
-binarize_layer_experiment()
+layered_experiment()
 
 eval_method_4_project(change_model_func=test, name_of_run='test')
