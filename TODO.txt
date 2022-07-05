@@ -9,6 +9,8 @@ conda env
 Workflow festlegen
     Soll jeder für sich arbeiten (also eigene main schreiben) oder sollen wir verschiedene Methoden implementieren
     und dann in einem run laufen lassen (also methoden in dlam_project)?
+       -------> Nutzen von eigener Methode in package experiments (siehe experiments.layered.binarize_layer_experiment).
+                    Diese Methode dann in main importieren und jeder arbeitet mit eigener main, kann Rest aber committen
     
     Bitbreite reduzieren oder nur Werte
         nur Werte auf 1/-1 (anfangs)
