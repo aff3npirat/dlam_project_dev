@@ -9,6 +9,10 @@ from dlam_project.evaluation import eval_model
 
 
 def test(change_model_fc, save_to, model=None, eval_fc=eval_model, device=None, duplicate="skip"):
+    """
+    Args:
+        duplicate: one of {"skip", "raise", "rename"}.
+    """
     if model is None:
         model = torch.load("./saves/base/model.pt")
 
