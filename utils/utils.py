@@ -7,16 +7,13 @@ from dlam_project.evaluation import eval_model
 
 
 
-def test(change_model_fc, *args, save_to=None, model=None, eval_fc=eval_model, device=None, **kwargs):
-    if save_to is None:
-        raise ValueError("Missing required argument 'save_to'")
-
+def test(change_model_fc, save_to, model=None, eval_fc=eval_model, device=None):
     os.makedirs(save_to, exist_ok=True)
     
     if model is None:
         model = torch.load("./saves/base/model.pt")
     
-    model = change_model_fc(model=model, *args, **kwargs)
+    model = change_model_fc(model)
 
     eval_fc(model, save_to, device=device)
 

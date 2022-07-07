@@ -14,18 +14,11 @@ def run():
         for i in range(2, num_layers):
             # model = torch.load("./saves/base/model.pt")
 
-            # args for change_model_fc can be passed either by keyword or position
             print(f"Evaluating layer {i}")
             test(
-                binarize_layer,
+                lambda x: binarize_layer(model=x, i=i),
                 save_to=f"./saves/layerwise/single/layer_{i}",
-                i=i,
             )
-            # test(
-            #     binarize_layer,
-            #     f"./saves/layerwise/single/layer_{i}",
-            #     i,
-            # )
 
 
         # binarize all layers forward direction
