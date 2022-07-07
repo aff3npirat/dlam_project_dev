@@ -1,33 +1,59 @@
-from torch import load, no_grad
+import torch
 
 from dlam_project.helpers import count_params
 from dlam_project.methods.layerwise import binarize_layer
-from method_evaluation import eval_method_4_project
+from utils.utils import test, setup
 
 
-def layered_experiment():
-    num_layers, _ = count_params(load("./dlam_project/saves/base/model.pt"))
 
-    with no_grad():
+def run():
+    num_layers, _ = count_params(torch.load("./saves/base/model.pt"))
+
+    with torch.no_grad():
         # binarize single layer
-        for i in range(2, num_layers):
+        # for i in range(2, num_layers):
+            # model = torch.load("./saves/base/model.pt")
 
-            print(f"Evaluating layer {i}")
-            eval_method_4_project(change_model_func=lambda x: binarize_layer(model=x, i=i), name_of_run=f"layerwise/single/layer_{i}")
+            # args for change_model_fc can be passed either by keyword or position
+            # print(f"Evaluating layer {i}")
+            # test(
+            #     binarize_layer,
+            #     save_to=f"./saves/layerwise/single/layer_{i}",
+            #     i=i,
+            # )
+            # test(
+            #     binarize_layer,
+            #     f"./saves/layerwise/single/layer_{i}",
+            #     i,
+            # )
 
 
         # binarize all layers forward direction
-        model = load("./dlam_project/saves/base/model.pt")
+        model = torch.load("./saves/base/model.pt")
         for i in range(2, num_layers):
 
             print(f"Evaluating layer 2-{i}")
-            model = eval_method_4_project(change_model_func=lambda x: binarize_layer(model=x, i=i), model=model,
-                                          name_of_run=f"layerwise/cumul/layer_{i}")
+            test(
+                binarize_layer,
+                save_to=f"./saves/layerwise/cumul/layer_{i}",
+                model=model,
+                i=i,
+            )
 
         # binarize all layers backward direction
-        model = load("./dlam_project/saves/base/model.pt")
+        model = torch.load("./saves/base/model.pt")
         for i in reversed(range(2, num_layers)):
 
             print(f"Evaluating layer {i}-{num_layers - 1}")
-            model = eval_method_4_project(change_model_func=lambda x: binarize_layer(model=x, i=i), model=model,
-                                          name_of_run=f"layerwise/cumul_back/layer_{i}")
+            test(
+                binarize_layer,
+                save_to=f"./saves/layerwise/cumul_back/layer_{i}",
+                model=model,
+                i=i,
+            )
+
+
+
+if __name__ == "__main__":
+    setup()
+    run()

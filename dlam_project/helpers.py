@@ -2,6 +2,7 @@ import torch.nn as nn
 import math
 
 
+
 def count_params(model, layers=(nn.Linear, nn.Conv2d, nn.Conv1d, nn.Conv3d)):
     """
     Counts number of trainable layers and parameters.
@@ -26,9 +27,3 @@ def get_ith_trainable(model, i, layers=(nn.Linear, nn.Conv2d, nn.Conv1d, nn.Conv
             i -= 1
         if i == 0:
             return idx
-
-
-def sign(x):
-    if x >= 0:
-        return 1.0
-    return -1.0
