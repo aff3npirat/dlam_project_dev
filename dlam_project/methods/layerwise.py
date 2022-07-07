@@ -1,9 +1,6 @@
 import torch
-import os
 from dlam_project.helpers import get_ith_trainable
 
-if torch.cuda.is_available():
-    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
 
 
 @torch.no_grad()
