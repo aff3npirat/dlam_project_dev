@@ -7,10 +7,27 @@ from .datasets.cifar import test_set
 
 
 
+def accuracy(output, target, topk=(1,)):
+    """Computes the precision@k for the specified values of k
+    
+    copied from https://github.com/bearpaw/pytorch-classification/blob/cc9106d598ff1fe375cc030873ceacfea0499d77/utils/eval.py
+    """
+    maxk = max(topk)
+    # batch_size = target.size(0)
+
+    _, pred = output.topk(maxk, dim=1, largest=True, sorted=True)
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+    res = []
+    for k in topk:
+        correct_k = correct[:k].sum(0)
+        # res.append(correct_k.mul_(100.0 / batch_size))
+        res.append(torch.mean(correct_k.float()))
+    return res
+
+
 def eval_model(model, save_to, dataset=test_set, batch_size=64, device=None):
-    """
-    returns the edited model
-    """
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -18,7 +35,7 @@ def eval_model(model, save_to, dataset=test_set, batch_size=64, device=None):
     loss_fn = nn.CrossEntropyLoss(reduction="none")
 
     losses = torch.empty(len(dataset))
-    correct = torch.empty(len(dataset))
+    outputs = torch.empty(len(dataset), len(dataset.classes))
 
     model = model.to(device)
     model.eval()
@@ -33,13 +50,13 @@ def eval_model(model, save_to, dataset=test_set, batch_size=64, device=None):
             end = (batch+1) * batch_size
 
             losses[start:end] = loss_fn(pred, y).cpu()
-            correct[start:end] = (pred.argmax(dim=1) == y).cpu()
+            outputs[start:end] = pred.cpu()
 
-        acc = correct.mean().item()
+        acc = accuracy(outputs, torch.tensor(dataset.targets), topk=(1, 5))
 
-    print(f"Accuracy: {acc:.3f}")
+    print(f"Top-1-err: {1 - acc[0]:.3f} | Top-5-err: {1- acc[1]:3.f}")
 
     torch.save(losses, os.path.join(save_to, "losses.pt"))
-    torch.save(correct, os.path.join(save_to, "correct.pt"))
+    torch.save(outputs, os.path.join(save_to, "outputs.pt"))
 
-    return (losses, correct)
+    return losses, acc
