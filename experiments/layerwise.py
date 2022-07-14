@@ -20,17 +20,15 @@ def run():
                 save_to=f"./saves/layerwise/single/layer_{i}",
             )
 
-
         # binarize all layers forward direction
         model = torch.load("./saves/base/model.pt")
         for i in range(2, num_layers):
 
             print(f"Evaluating layer 2-{i}")
             test(
-                binarize_layer,
+                lambda x: binarize_layer(model=x, i=i),
                 save_to=f"./saves/layerwise/cumul/layer_{i}",
                 model=model,
-                i=i,
             )
 
         # binarize all layers backward direction
@@ -39,8 +37,7 @@ def run():
 
             print(f"Evaluating layer {i}-{num_layers - 1}")
             test(
-                binarize_layer,
+                lambda x: binarize_layer(model=x, i=i),
                 save_to=f"./saves/layerwise/cumul_back/layer_{i}",
                 model=model,
-                i=i,
             )

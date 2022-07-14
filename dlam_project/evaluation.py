@@ -54,7 +54,7 @@ def eval_model(model, save_to, dataset=test_set, batch_size=64, device=None):
 
         acc = accuracy(outputs, torch.tensor(dataset.targets), topk=(1, 5))
 
-    print(f"Top-1-err: {1 - acc[0]:.3f} | Top-5-err: {1- acc[1]:3.f}")
+    print(f"Top-1-err: {1 - acc[0]:.3f} | Top-5-err: {1- acc[1]:.3f}")
 
     torch.save(acc, os.path.join(save_to, "accuracy.pt"))
     torch.save(losses, os.path.join(save_to, "losses.pt"))
